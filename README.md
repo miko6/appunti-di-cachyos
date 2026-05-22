@@ -18,7 +18,7 @@ function fish_greeting
 end
 ```  
 
-- Installare uno dei *[Nerd Font](https://github.com/ryanoasis/nerd-fonts?tab=readme-ov-file)*  - 
+- Installare uno dei *[Nerd Font](https://github.com/ryanoasis/nerd-fonts?tab=readme-ov-file)*  
 - Il mio preferito è *Meslo*:
 ```
 git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git  
