@@ -55,8 +55,8 @@ es. *alias clera clear*
 
 5. Installazione della stampante Canon TS3300 e del suo software
 
-`sudo pacman -S cups cups-pdf system-config-printer`
-`sudo systemctl enable --now cups`
+`sudo pacman -S cups cups-pdf system-config-printer`  
+`sudo systemctl enable --now cups`  
 `sudo pacman -S sane sane-airscan simple-scan`  
 
 6. Per evitare conflitti tra le *WebUi* dei servizi installati nel server andiamo a modificare il file `/etc/hosts` nel seguente modo: 
