@@ -40,7 +40,15 @@ es. *alias clera clear*
 
 - Riavviare 
 
-4. Avvio automatico del disco di rete  
+4. Generare la chiave SSH
+
+`ssh-keygen -t ed25519`
+
+`ssh-copy-id 192.168.1.xxx`
+
+`ssh 192.168.1.xxx`  per test
+
+5. Avvio automatico del disco di rete  
 
 - creiamo il punto di mount per i due dischi  
 
@@ -53,33 +61,70 @@ es. *alias clera clear*
 //192.168.1.192/NASm2 /mnt/NASm2 cifs username=domenico,password=asdcv,rw,uid=1000,gid=1000 0 0
 ```
 
-5. Installazione della stampante Canon TS3300 e del suo software
+6. Installazione della stampante Canon TS3300 e del suo software
 
 `sudo pacman -S cups cups-pdf system-config-printer`  
 `sudo systemctl enable --now cups`  
 `sudo pacman -S sane sane-airscan simple-scan`  
 
-6. Per evitare conflitti tra le *WebUi* dei servizi installati nel server andiamo a modificare il file `/etc/hosts` nel seguente modo: 
+7. Modifica la configurazione globale del DNS
+
+##### 1. Apri il terminale su CachyOS e apri il file di configurazione  
+`sudo nano /etc/systemd/resolved.conf`
+
+##### 2. Usa il codice con cautela.Cerca la sezione [Resolve], rimuovi il simbolo # se presente davanti alle righe e modificale inserendo esattamente questi valori:
+```
+[Resolve]
+Domains=~local
+MulticastDNS=no
+LLMNR=no
+```
+
+Salva il file premendo CTRL+O, conferma con Invio ed esci con CTRL+X.
+
+##### 3. Identifica la connessione attiva  
+`nmcli connection show --active`
+
+##### 4. Ipotizziamo che la tua rete si chiami "NomeDellaTuaWiFi". Sostituisci questo testo con il nome reale nei tre comandi successivi. Esegui questi tre comandi in sequenza nel terminale per forzare l'uso esclusivo del Pi-hole ed evitare che l'IPv6 del router crei interferenze. 
+
+- Imposta il DNS sul tuo server ed esclude quelli automatici del router  
+`sudo nmcli connection modify "NomeDellaTuaWiFi" ipv4.dns "192.168.1.192" ipv4.ignore-auto-dns yes`  
+
+- Ignora l'IPv6 su questa connessione per evitare bypass del DNS  
+`sudo nmcli connection modify "NomeDellaTuaWiFi" ipv6.method "ignore"`  
+
+- Dice a NetworkManager di gestire l'estensione .local tramite questo DNS  
+`sudo nmcli connection modify "NomeDellaTuaWiFi" ipv4.dns-search "~local"`  
+
+##### 5. Applica le modifiche e svuota la cache  
+`sudo nmcli connection down "NomeDellaTuaWiFi" && sudo nmcli connection up "NomeDellaTuaWiFi" && sudo systemctl restart systemd-resolved && sudo resolvectl flush-caches`  
+
+##### 6. Controlla se CachyOS ora vede correttamente la strada verso il server  
+`resolvectl query portainer.local`  
+
+  * Per evitare conflitti tra le *WebUi* o se ci sono problemi a far digerire pihole come DNSResolve, andiamo a modificare il file `/etc/hosts` nel seguente modo: 
 
 `sudo nano /etc/hosts`  
 
-- aggiungiamo al file le seguenti linee  
+aggiungiamo al file le seguenti linee  
 
 ```
 192.168.1.xxx   pi.hole  
 192.168.1.xxx   webmin.local  
 192.168.1.xxx   portainer.local  
-```
-7. *script* per **mpv** da aggiungere nella cartella */home/.config/mpv/scripts*: **[autoload.lua](https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua)** - **[blacklist-extensions.lua](https://github.com/occivink/mpv-scripts/blob/master/scripts/blacklist-extensions.lua)**
+192.168.1.xxx   bentopdf.local 
+```  
+
+8. *script* per **mpv** da aggiungere nella cartella */home/.config/mpv/scripts*: **[autoload.lua](https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua)** - **[blacklist-extensions.lua](https://github.com/occivink/mpv-scripts/blob/master/scripts/blacklist-extensions.lua)**  
 
 - File da aggiungere nella cartella */home/.config/mpv/script-opts*:  
 
-### autoload.conf  
+#### autoload.conf  
 ```
 directory_mode=ignore
 ```
 
-### blacklist_extension.conf
+#### blacklist_extension.conf
 ```
 # only one of blacklist, whitelist should be defined at a time
 
@@ -102,9 +147,8 @@ PGUP playlist-prev ; show-text "${playlist-pos-1}/${playlist-count}"
 PGDWN playlist-next ; show-text "${playlist-pos-1}/${playlist-count}"
 ```
 
-8. ## Software
+9. ###### Software
 
 - Floorp
 - Telegram Desktop
-- LibreOffice
-- Code OSS  
+- LibreOffice  
