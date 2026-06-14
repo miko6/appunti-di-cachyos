@@ -58,7 +58,7 @@ es. *alias clera clear*
 - aggiungere la seguente riga alla fine del file
 
 ```
-//192.168.1.192/NASm2 /mnt/NASm2 cifs username=domenico,password=asdcv,rw,uid=1000,gid=1000 0 0
+//192.168.1.192/NASm2 /mnt/NASm2 cifs username=nomeutente,password=password,rw,uid=1000,gid=1000 0 0
 ```
 
 6. Installazione della stampante Canon TS3300 e del suo software
